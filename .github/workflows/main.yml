@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     # get part of the tag after the `v`
     - name: Extract tag version number
@@ -28,7 +28,7 @@ jobs:
         download: https://github.com/${{github.repository}}/releases/download/${{github.event.release.tag_name}}/module.zip
 
     # Create a zip file with all files required by the module to add to the release
-    - run: zip -r ./module.zip packRegistry.js module.json LICENSE README.md changelog.md attribution.xlsx Combat/ Creatures/ Misc/ Nature/ Tavern/ Town/ lang/
+    - run: zip -r ./module.zip packRegistry.js module.json LICENSE README.md changelog.md Attribution.xlsx img/ Combat/ Creatures/ Misc/ Nature/ Tavern/ Town/ lang/
 
     # Create a release for this specific version
     - name: Update Release with Files
