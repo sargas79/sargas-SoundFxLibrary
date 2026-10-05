@@ -29,6 +29,18 @@ Here is a list of modules that can be used to create soundboards, in order to pl
 <li><a href="https://github.com/SvenWerlen/moulinette-sounds">Moulinette Forge Sounds</a></li>
 </ul>
 
+## Installation
+1. In Foundry VTT, open **Add-on Modules** and click **Install Module**.
+2. Paste the following manifest URL into the **Manifest URL** field and click **Install**:
+
+```
+https://github.com/sargas79/sargas-SoundFxLibrary/releases/latest/download/module.json
+```
+
+3. The sounds are then available under `modules/soundfxlibrary` in the file picker. Enabling the module in **Manage Modules** is only needed if you want the sound packs registered with Soundboard by Blitz or Moulinette.
+
+Alternatively, download `module.zip` from the [latest release](https://github.com/sargas79/sargas-SoundFxLibrary/releases/latest) and extract it into `Data/modules/soundfxlibrary`.
+
 ## Importing Sounds into Material Deck or Material Keys
 When selecting a sound for the module's soundboard, select 'File Picker'. When the file browser is open, make sure it is set to 'User Data' at the top.
 Then browse to 'modules/soundfxlibrary' and then select the category you want and pick a sound.
