@@ -21,8 +21,7 @@
     ],
     "compatibility": {
         "minimum": "11",
-        "verified": "14",
-        "maximum": "14"
+        "verified": "14"
     },
     "url": "https://github.com/sargas79/sargas-SoundFxLibrary",
     "bugs": "https://github.com/sargas79/sargas-SoundFxLibrary/issues",
