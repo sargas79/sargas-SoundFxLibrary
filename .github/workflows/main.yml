@@ -1,8 +1,17 @@
 name: Release Creation
 
-on: 
+# Runs when a release is published in the GitHub UI, or when a version tag
+# (e.g. v1.1.0) is pushed. In the tag case the release is created by this
+# workflow with auto-generated notes.
+on:
   release:
     types: [published]
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -10,10 +19,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # get part of the tag after the `v`
+    # Tag name is github.ref_name for both the release and the tag-push events
     - name: Extract tag version number
       id: get_version
-      uses: battila7/get-version-action@v2
+      run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
     # Substitute the Manifest and Download URLs in the module.json
     - name: Substitute Manifest and Download Links For Versioned Ones
@@ -22,24 +31,27 @@ jobs:
       with:
         files: 'module.json'
       env:
-        version: ${{steps.get_version.outputs.version-without-v}}
-        url: https://github.com/${{github.repository}}
-        manifest: https://github.com/${{github.repository}}/releases/latest/download/module.json
-        download: https://github.com/${{github.repository}}/releases/download/${{github.event.release.tag_name}}/module.zip
+        version: ${{ steps.get_version.outputs.version }}
+        url: https://github.com/${{ github.repository }}
+        manifest: https://github.com/${{ github.repository }}/releases/latest/download/module.json
+        download: https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/module.zip
 
     # Create a zip file with all files required by the module to add to the release
     - run: zip -r ./module.zip packRegistry.js module.json LICENSE README.md changelog.md Attribution.xlsx img/ Combat/ Creatures/ Misc/ Nature/ Tavern/ Town/ lang/
 
-    # Create a release for this specific version
+    # Create (tag push) or update (release published) the release for this version
     - name: Update Release with Files
       id: create_version_release
       uses: ncipollo/release-action@v1
       with:
-        allowUpdates: true # Set this to false if you want to prevent updating existing releases
-        name: ${{ github.event.release.name }}
-        draft: ${{ github.event.release.unpublished }}
-        prerelease: ${{ github.event.release.prerelease }}
+        allowUpdates: true
+        omitBodyDuringUpdate: true
+        omitNameDuringUpdate: true
+        generateReleaseNotes: ${{ github.event_name == 'push' }}
+        name: ${{ github.event_name == 'release' && github.event.release.name || github.ref_name }}
+        draft: ${{ github.event_name == 'release' && github.event.release.unpublished || false }}
+        prerelease: ${{ github.event_name == 'release' && github.event.release.prerelease || false }}
         token: ${{ secrets.GITHUB_TOKEN }}
         artifacts: './module.json, ./module.zip'
-        tag: ${{ github.event.release.tag_name }}
-        body: ${{ github.event.release.body }}
+        tag: ${{ github.ref_name }}
+        body: ${{ github.event_name == 'release' && github.event.release.body || '' }}
