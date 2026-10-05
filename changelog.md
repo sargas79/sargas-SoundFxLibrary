@@ -1,4 +1,12 @@
 # Changelog Sound Fx Library
+### v1.1.0 - 05-10-2026 (fork by sargas79)
+This release is published from a fork. SoundFx Library was created by CDeenen (Material Foundry) and had not been updated since Foundry v11; this fork only brings it up to date for current Foundry versions.<br>
+-Updated module.json for Foundry VTT v13 and v14 (verified v14, minimum v11)<br>
+-Removed manifest fields that Foundry v12+ no longer accepts (name, author, minimumCoreVersion, compatibleCoreVersion)<br>
+-packRegistry.js is now loaded as an ES module and guards against missing Soundboard/Moulinette APIs<br>
+-Manifest, download and attribution links now point to this fork<br>
+-Fixed the release workflow (Attribution.xlsx file name, updated GitHub Actions)<br>
+
 ### v1.0.3 - 08-05-2024
 -Updated manifest.json for Foundry v11<br>
 -Added background images for the Foundry Add-on Modules browser
