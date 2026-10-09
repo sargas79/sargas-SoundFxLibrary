@@ -1,11 +1,10 @@
 name: Release Creation
 
-# Runs when a release is published in the GitHub UI, or when a version tag
-# (e.g. v1.1.0) is pushed. In the tag case the release is created by this
-# workflow with auto-generated notes.
+# Runs when a version tag (e.g. v1.1.0) is pushed. The workflow creates the
+# GitHub release, generates release notes and attaches module.json and
+# module.zip. To cut a release:
+#   git tag v1.2.0 && git push origin v1.2.0
 on:
-  release:
-    types: [published]
   push:
     tags:
       - 'v*'
@@ -19,7 +18,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # Tag name is github.ref_name for both the release and the tag-push events
+    # Strip the leading "v" from the tag to get the module version
     - name: Extract tag version number
       id: get_version
       run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
@@ -39,19 +38,14 @@ jobs:
     # Create a zip file with all files required by the module to add to the release
     - run: zip -r ./module.zip packRegistry.js module.json LICENSE README.md changelog.md Attribution.xlsx img/ Combat/ Creatures/ Misc/ Nature/ Tavern/ Town/ lang/
 
-    # Create (tag push) or update (release published) the release for this version
-    - name: Update Release with Files
+    # Create the release for this tag and attach the artifacts
+    - name: Create Release with Files
       id: create_version_release
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
-        omitBodyDuringUpdate: true
-        omitNameDuringUpdate: true
-        generateReleaseNotes: ${{ github.event_name == 'push' }}
-        name: ${{ github.event_name == 'release' && github.event.release.name || github.ref_name }}
-        draft: ${{ github.event_name == 'release' && github.event.release.unpublished || false }}
-        prerelease: ${{ github.event_name == 'release' && github.event.release.prerelease || false }}
+        generateReleaseNotes: true
+        name: ${{ github.ref_name }}
+        tag: ${{ github.ref_name }}
         token: ${{ secrets.GITHUB_TOKEN }}
         artifacts: './module.json, ./module.zip'
-        tag: ${{ github.ref_name }}
-        body: ${{ github.event_name == 'release' && github.event.release.body || '' }}
